@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--Main-->
+    <title>Class Manager</title>
+    <meta charset="utf-8">
+    <th:block th:insert="Common/_css :: content"/>
+</head>
+<body>
+
+<th:block th:insert="Common/header :: content"/>
+
+<!--====== MAIN CONTENT ======-->
+<div class="container-fluid">
+    <br>
+    <table id="contentTable" class="mdl-data-table" style="width:100%">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Major</th>
+            <th>Date Created</th>
+            <th>Function<span style="float: right"><a onclick="addClassForm()" class="btn btn-primary">Add new Class</a> </span></th>
+        </tr>
+        </thead>
+        <tbody>
+        <th:block th:each="i: ${ClassesList}">
+            <tr>
+                <td>[(${i.id})]</td>
+                <td>[(${i.name})]</td>
+                <td>[(${i.major})]</td>
+                <td class="day">[(${i.datecreated})]</td>
+                <td>
+                    <a th:href="'/classes/'+${i.name}" class="btn btn-outline-success">View Room</a>
+                    <a class="btn btn-outline-warning">Edit</a>
+                    <a th:onclick="deleteClassAPI('[(${i.id})]')" class="btn btn-outline-danger">Delete</a>
+                </td>
+            </tr>
+        </th:block>
+        </tbody>
+    </table>
+    <br>
+</div>
+
+<th:block th:insert="Common/footer :: content"/>
+
+<th:block th:insert="Common/_js :: content"/>
+<script>
+    document.querySelectorAll('.day').forEach((el)=>{
+        el.innerText=moment(el.innerText,"YYYY-MM-DD hh:mm:ss").fromNow()
+    });
+
+    function addClassForm() {
+        Swal.fire({
+            title: 'Add new class to the list',
+            icon: 'info',
+            html:   '<form onsubmit="return false" id="form-add-class" method="post">' +
+                '<input type="text" name="name" required placeholder="Class name"><br><br>'+
+                '<input type="text" name="major" required placeholder="Class major"><br><br>'+
+                '<input class="btn btn-outline-primary" onclick="addClassAPI()" value="Add"><br>'+
+                '</form>',
+            showCloseButton: true,
+            showCancelButton: false,
+            showConfirmButton: false,
+        });
+    }
+
+    function editClassForm(id,name,major) {
+        Swal.fire({
+            title: 'Edit this class purpose',
+            icon: 'warning',
+            html:   '<form onsubmit="return false" id="form-edit-class" method="post">' +
+                '<input type="hidden" name="id" value="'+id+'">'+
+                '<input type="text" name="name" required placeholder="Class name" value="'+name+'"><br><br>'+
+                '<input type="text" name="major" required placeholder="Major" value="'+major+'"><br><br>'+
+                '<input class="btn btn-outline-primary" onclick="editClassAPI()" value="Save"><br>'+
+                '</form>',
+            showCloseButton: true,
+            showCancelButton: false,
+            showConfirmButton: false,
+        });
+    }
+
+    function addClassAPI(){
+        var formData = new FormData(document.getElementById("form-add-class"));
+        $.ajax({
+            url: '/api/class/add',
+            type: 'POST',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false
+        }).done(function (result) {
+            if (result.toString().substring(0, 7) === "//ERROR") {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: result.toString().substring(7),
+                    showConfirmButton: false,
+                    timer: 2000
+                })
+            } else {
+                location.reload();
+            }
+        });
+    }
+
+    function editClassAPI(){
+        var formData = new FormData(document.getElementById("form-edit-class"));
+        $.ajax({
+            url: '/api/class/edit',
+            type: 'POST',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false
+        }).done(function (result) {
+            if (result.toString().substring(0, 7) === "//ERROR") {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: result.toString().substring(7),
+                    showConfirmButton: false,
+                    timer: 2000
+                })
+            } else {
+                location.reload();
+            }
+        });
+    }
+
+    function deleteClassAPI(id){
+        $.ajax({
+            url: '/api/class/delete',
+            type: 'POST',
+            data: {id}
+        }).done(function (result) {
+            if (result.toString().substring(0, 7) === "//ERROR") {
+            } else {
+                location.reload();
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        $('#contentTable').DataTable( {
+            autoWidth: false,
+            columnDefs: [
+                {
+                    targets: ['_all'],
+                    className: 'mdc-data-table__cell'
+                }
+            ]
+        } );
+    } );
+</script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--Main-->
+    <title>[(${ClassSelected.name})]</title>
+    <meta charset="utf-8">
+    <th:block th:insert="Common/_css :: content"/>
+</head>
+<body>
+
+<th:block th:insert="Common/header :: content"/>
+
+<!--====== MAIN CONTENT ======-->
+<div class="container-fluid">
+    <br>
+    <th:block th:if="${ClassSelectedStudentList.isEmpty()}">
+        <h2 style="text-align: center;color:red">[(${ClassSelected.name})] had no students</h2><br>
+        <span style="text-align: center;display: block"><a th:onclick="addStudentForm('[(${ClassSelected.id})]')" class="btn btn-primary">Add Student</a> </span>
+    </th:block>
+    <th:block th:if="${!ClassSelectedStudentList.isEmpty()}">
+        <h2 style="text-align: center">Student in <span style="color:forestgreen">[(${ClassSelected.name})] - [(${ClassSelected.major})]</span></h2>
+        <table id="contentTable" class="mdl-data-table" style="width:100%">
+            <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Email</th>
+                <th>Game</th>
+                <th>Function<span style="float: right"><a th:onclick="addStudentForm('[(${ClassSelected.id})]')" class="btn btn-primary">Add Student</a> </span></th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="i: ${ClassSelectedStudentList}">
+                <tr>
+                    <td>[(${i.demo1StudentByStudentid.name})]</td>
+                    <td>[(${i.demo1StudentByStudentid.email})]</td>
+                    <td>[(${i.demo1StudentByStudentid.game})]</td>
+                    <td>
+                        <a th:href="'/student/'+${i.demo1StudentByStudentid.name}" class="btn btn-outline-success">View student learnings</a>
+                        <a th:onclick="deleteStudentInClassAPI('[(${i.id})]')" class="btn btn-outline-danger">Delete</a>
+                    </td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+    </th:block>
+    <br>
+</div>
+
+<th:block th:insert="Common/footer :: content"/>
+
+<th:block th:insert="Common/_js :: content"/>
+<script th:inline="javascript">
+    function addStudentForm(id) {
+        Swal.fire({
+            title: 'Add student to this class',
+            icon: 'info',
+            html:   '<form onsubmit="return false" id="form-add-student" method="post">' +
+                '<input type="hidden" name="classId" value="'+id+'">'+
+                ' <label for="studentId">Choose a student:</label>'+
+                ' <select name="studentId"> '+
+                /*<![CDATA[*/
+                /*[# th:each="i : ${StudentList}"]*/
+                '  <option value="[(${i.id})]">[(${i.name})]</option>'+
+                /*[/]*/
+                /*]]>*/
+                '</select> '+
+                '<input class="btn btn-outline-primary" onclick="addStudentAPI()" value="Add"><br>'+
+                '</form>',
+            showCloseButton: true,
+            showCancelButton: false,
+            showConfirmButton: false,
+        });
+    }
+</script>
+
+<script>
+    function addStudentAPI(){
+        var formData = new FormData(document.getElementById("form-add-student"));
+        $.ajax({
+            url: '/api/class/addStudent',
+            type: 'POST',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false
+        }).done(function (result) {
+            if (result.toString().substring(0, 7) === "//ERROR") {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: result.toString().substring(7),
+                    showConfirmButton: false,
+                    timer: 2000
+                })
+            } else {
+                location.reload();
+            }
+        });
+    }
+
+    function deleteStudentInClassAPI(id){
+        $.ajax({
+            url: '/api/class/deleteStudent',
+            type: 'POST',
+            data: {id}
+        }).done(function (result) {
+            if (result.toString().substring(0, 7) === "//ERROR") {
+            } else {
+                location.reload();
+            }
+        });
+    }
+    $(document).ready(function() {
+        $('#contentTable').DataTable( {
+            autoWidth: false,
+            columnDefs: [
+                {
+                    targets: ['_all'],
+                    className: 'mdc-data-table__cell'
+                }
+            ]
+        } );
+    } );
+</script>
+</body>
+</html>

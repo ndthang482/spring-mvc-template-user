@@ -1,0 +1,29 @@
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<!-- =========== HEADER ============ -->
+<div th:fragment="content">
+
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+
+        <!-- Links -->
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a id="nav1" class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+                <a id="nav2" class="nav-link" href="/classes">Classroom</a>
+            </li>
+            <li class="nav-item">
+                <a id="nav3" class="nav-link" href="/about">About</a>
+            </li>
+        </ul>
+
+    </nav>
+
+    <script>
+        if (document.title==='Home') document.getElementById('nav1').classList.add('active');
+        if (document.title==='Class Manager') document.getElementById('nav2').classList.add('active');
+        if (document.title==='About') document.getElementById('nav3').classList.add('active');
+    </script>
+</div>
+

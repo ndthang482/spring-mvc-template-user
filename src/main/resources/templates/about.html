@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--Main-->
+    <title>About</title>
+    <meta charset="utf-8">
+    <th:block th:insert="Common/_css :: content"/>
+</head>
+<body>
+
+<th:block th:insert="Common/header :: content"/>
+
+<!--====== MAIN CONTENT ======-->
+<div class="container-fluid">
+    <br>
+    <div class="card">
+        <div class="card-header">
+            Template
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Nguyen Duc Thang</h5>
+            <p class="card-text">Have CRUD function, made on SpringBoot framework and Hibernate. Some additional tech: AJAX, SWAL2, Datatables, Bootstrap 4, Thymleaf, Moment.js</p>
+            <a href="https://thangthontien2k@gmail.com" target="_blank" class="btn btn-primary">Main website</a>
+        </div>
+    </div>
+    <br>
+</div>
+
+<th:block th:insert="Common/footer :: content"/>
+
+<th:block th:insert="Common/_js :: content"/>
+
+</body>
+</html>
